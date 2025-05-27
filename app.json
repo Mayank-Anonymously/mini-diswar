@@ -1,29 +1,39 @@
 {
-  "expo": {
-    "name": "my-app",
-    "slug": "my-app",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "edgeToEdgeEnabled": true
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    }
-  }
+	"expo": {
+		"name": "MiniDiswar",
+		"slug": "MiniDiswar",
+		"version": "1.0.1",
+		"orientation": "portrait",
+		"icon": "./assets/icon.png",
+		"userInterfaceStyle": "light",
+		"newArchEnabled": true,
+		"splash": {
+			"image": "./assets/splash-icon.png",
+			"resizeMode": "contain",
+			"backgroundColor": "#ffffff"
+		},
+		"ios": {
+			"supportsTablet": true
+		},
+		"android": {
+			"versionCode": 9,
+			"adaptiveIcon": {
+				"foregroundImage": "./assets/mini-desawar.png",
+				"backgroundColor": "#ffffff"
+			},
+			"edgeToEdgeEnabled": true,
+			"package": "com.mayank221.MiniDiswar"
+		},
+		"web": {
+			"favicon": "./assets/favicon.png"
+		},
+		"runtimeVersion": {
+			"policy": "appVersion"
+		},
+		"extra": {
+			"eas": {
+				"projectId": "dde62a46-744d-448a-aa9c-03a32f3122a6"
+			}
+		}
+	}
 }
