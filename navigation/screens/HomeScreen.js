@@ -54,51 +54,65 @@ const DATA = [
 		number: 34,
 	},
 ];
-
-const Item = ({ title, number, next_result, navigation, result }) => (
-	<ImageBackground
-		style={styles.item}
-		source={{
-			uri: 'https://images.unsplash.com/photo-1503264116251-35a269479413?fit=crop&w=1050&q=80',
-		}}>
-		<Text style={styles.title}>{title}</Text>
-		<Text style={styles.number}>{number}</Text>
-		<View>
-			<Text
-				style={{
-					fontSize: 20,
-					fontWeight: 'bold',
-					margin: 1,
-					textAlign: 'center',
-					color: 'white',
-				}}>
-				{result[0].time}
+const momentnow = moment().format('YYYY-MM-DD');
+const Item = ({ title, number, next_result, navigation, results, mode }) => {
+	const result = title === 'Minidiswar' ? results[0] : results;
+	return (
+		<ImageBackground
+			style={styles.item}
+			source={{
+				uri: 'https://images.unsplash.com/photo-1503264116251-35a269479413?fit=crop&w=1050&q=80',
+			}}>
+			<Text style={styles.title}>{title}</Text>
+			<Text style={styles.number}>
+				{title === 'Minidiswar'
+					? result[result.length - 1].number
+					: result.length === 0
+					? number
+					: [result.length - 1].number}
 			</Text>
-		</View>
-		<View style={{ backgroundColor: 'yellow', borderRadius: 2 }}>
-			<Text
-				style={{
-					fontSize: 10,
-					fontWeight: 'bold',
-					margin: 1,
-					textAlign: 'center',
-				}}>
-				Next Result :{moment(next_result).format('HH:mm')}
-			</Text>
-		</View>
-	</ImageBackground>
-);
+			<View>
+				<Text
+					style={{
+						fontSize: 20,
+						fontWeight: 'bold',
+						margin: 1,
+						textAlign: 'center',
+						color: 'white',
+					}}>
+					{title === 'Minidiswar'
+						? result[result.length - 1].time
+						: result.length === 0
+						? '--'
+						: [result.length - 1].time}
+				</Text>
+			</View>
+			<View style={{ backgroundColor: 'yellow', borderRadius: 2 }}>
+				<Text
+					style={{
+						fontSize: 10,
+						fontWeight: 'bold',
+						margin: 1,
+						textAlign: 'center',
+					}}>
+					Next Result :{next_result}
+				</Text>
+			</View>
+		</ImageBackground>
+	);
+};
 
 const HomeScreen = () => {
 	const navigation = useNavigation();
 	const [data, setdata] = useState([]);
 
 	useEffect(() => {
+		fetchallapi(setdata);
+
 		setInterval(() => {
 			fetchallapi(setdata);
 		}, 2000);
 	}, []);
-
 	return (
 		<SafeAreaProvider>
 			<SafeAreaView style={styles.container}>
@@ -111,6 +125,8 @@ const HomeScreen = () => {
 									title: item.categoryname,
 									item: item.result,
 									date: item.date,
+									mode: item.mode,
+									loadingg: false,
 								})
 							}>
 							<Item
@@ -118,7 +134,14 @@ const HomeScreen = () => {
 								number={item.number}
 								next_result={item.next_result}
 								navigation={navigation}
-								result={item.result}
+								results={
+									item.categoryname === 'Minidiswar'
+										? item.result
+												.filter((ite) => ite.date === momentnow)
+												.map((it) => it.times)
+										: item.result
+								}
+								mode={item.mode}
 							/>
 						</TouchableOpacity>
 					)}

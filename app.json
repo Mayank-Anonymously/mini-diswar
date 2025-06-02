@@ -1,39 +1,42 @@
 {
-	"expo": {
-		"name": "MiniDiswar",
-		"slug": "MiniDiswar",
-		"version": "1.0.1",
-		"orientation": "portrait",
-		"icon": "./assets/icon.png",
-		"userInterfaceStyle": "light",
-		"newArchEnabled": true,
-		"splash": {
-			"image": "./assets/splash-icon.png",
-			"resizeMode": "contain",
-			"backgroundColor": "#ffffff"
-		},
-		"ios": {
-			"supportsTablet": true
-		},
-		"android": {
-			"versionCode": 9,
-			"adaptiveIcon": {
-				"foregroundImage": "./assets/mini-desawar.png",
-				"backgroundColor": "#ffffff"
-			},
-			"edgeToEdgeEnabled": true,
-			"package": "com.mayank221.MiniDiswar"
-		},
-		"web": {
-			"favicon": "./assets/favicon.png"
-		},
-		"runtimeVersion": {
-			"policy": "appVersion"
-		},
-		"extra": {
-			"eas": {
-				"projectId": "dde62a46-744d-448a-aa9c-03a32f3122a6"
-			}
-		}
-	}
+  "expo": {
+    "name": "MiniDiswar",
+    "slug": "MiniDiswar",
+    "version": "1.0.1",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "versionCode": 9,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/mini-desawar.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.mayank221.MiniDiswar"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "dde62a46-744d-448a-aa9c-03a32f3122a6"
+      }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/dde62a46-744d-448a-aa9c-03a32f3122a6"
+    }
+  }
 }

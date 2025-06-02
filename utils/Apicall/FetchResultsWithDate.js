@@ -3,23 +3,27 @@ import axios from 'axios';
 import moment from 'moment';
 import { HOST } from '../static';
 
-const FetchResultsWithDate = (date, title, setdata) => {
-	const formatdate = moment(date).format('YYYY-MM-DD');
+const FetchResultsWithDate = (curmomnet, title, setdata, mode, setLoading) => {
+	setLoading(true);
+	const formatdate = moment(curmomnet).format('YYYY-MM-DD');
+	console.log(`${HOST}/fetch-results-by-month/${formatdate}/${title}/${mode}`);
 	const options = {
 		method: 'GET',
-		url: `${HOST}/fetch-result-by-date/${formatdate}/${title}`,
+		url: `${HOST}/fetch-results-by-month/${formatdate}/${title}/${mode}`,
 		headers: {
 			'Content-type': 'application/json',
 		},
 	};
+	setLoading(true);
 	axios
 		.request(options)
 		.then(function (response) {
-			console.log(response.data);
 			setdata(response.data.data);
+			setLoading(false);
 		})
 		.catch(function (error) {
 			console.error(error);
+			setLoading(false);
 		});
 };
 

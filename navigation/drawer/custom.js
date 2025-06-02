@@ -1,17 +1,39 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
-import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
+import {
+	View,
+	Text,
+	StyleSheet,
+	Image,
+	FlatList,
+	TouchableOpacity,
+} from 'react-native';
+import { DrawerContentScrollView } from '@react-navigation/drawer';
 import d from '../../assets/mini-desawar.png';
-import { fetchallapi } from '../../utils/Apicall/fetchallresults';
 import { fetchallcategoryapi } from '../../utils/Apicall/FetchAllCategory';
 
 const CustomDrawer = (props) => {
 	const { navigation } = props;
-	const [data, setdata] = useState([]);
+	const [data, setData] = useState([]);
 
 	useEffect(() => {
-		fetchallcategoryapi(setdata);
+		fetchallcategoryapi(setData);
 	}, []);
+
+	const renderItem = ({ item }) => (
+		<TouchableOpacity
+			style={styles.drawerItem}
+			onPress={() =>
+				navigation.navigate('Results', {
+					title: item.categoryname,
+					item: item.result,
+					date: item.date,
+					mode: item.mode,
+					loadingg: false,
+				})
+			}>
+			<Text style={styles.drawerLabel}>{item.categoryname}</Text>
+		</TouchableOpacity>
+	);
 
 	return (
 		<DrawerContentScrollView
@@ -21,28 +43,26 @@ const CustomDrawer = (props) => {
 				<View style={styles.drawerHeader}>
 					<Image
 						source={d}
-						resizeMode='cover'
-						style={{ resizeMode: 'contain', width: 100, height: 100 }}
+						resizeMode='contain'
+						style={{ width: 100, height: 100 }}
 					/>
 					<Text style={styles.appTitle}>Mini Diswar Results</Text>
 				</View>
-				<View>
-					{data.map((item, index) => {
-						return (
-							<DrawerItem
-								label={item.categoryname}
-								labelStyle={styles.drawerLabel}
-								onPress={() =>
-									navigation.navigate('Results', {
-										title: item.categoryname,
-										item: item.result,
-										date: item.date,
-									})
-								}
-							/>
-						);
-					})}
-				</View>
+
+				<TouchableOpacity
+					style={styles.drawerItem}
+					onPress={() => navigation.navigate('HomeStack')}>
+					<Text style={styles.drawerLabel}>Home</Text>
+				</TouchableOpacity>
+
+				<FlatList
+					data={data}
+					keyExtractor={(item, index) =>
+						item.id?.toString() || `${item.categoryname}-${index}`
+					}
+					renderItem={renderItem}
+					extraData={data}
+				/>
 			</View>
 
 			<View style={styles.footer}>
@@ -67,11 +87,18 @@ const styles = StyleSheet.create({
 		borderBottomColor: '#ccc',
 		marginBottom: 10,
 		height: 150,
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 	appTitle: {
 		fontSize: 20,
 		fontWeight: 'bold',
 		color: '#FFFF',
+		marginTop: 10,
+	},
+	drawerItem: {
+		paddingVertical: 15,
+		paddingHorizontal: 20,
 	},
 	drawerLabel: {
 		fontSize: 16,
