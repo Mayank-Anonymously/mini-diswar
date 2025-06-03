@@ -8,6 +8,7 @@ export const fetchallapi = async (setdata) => {
 				'Content-type': 'application/json',
 			},
 		});
+		console.log(response);
 		setdata(response.data.data);
 	} catch (error) {
 		console.error(error);

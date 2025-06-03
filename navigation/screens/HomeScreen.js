@@ -113,6 +113,8 @@ const HomeScreen = () => {
 			fetchallapi(setdata);
 		}, 2000);
 	}, []);
+
+	console.log(data);
 	return (
 		<SafeAreaProvider>
 			<SafeAreaView style={styles.container}>
