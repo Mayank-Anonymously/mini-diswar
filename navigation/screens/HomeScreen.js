@@ -16,44 +16,8 @@ import {
 } from '../../utils/Apicall/fetchallresults';
 import moment from 'moment';
 
-const DATA = [
-	{
-		id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-		title: 'RJ DELHI',
-		next_resut: '8:30PM',
-		number: 34,
-	},
-	{
-		id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-		title: 'DESHAWAR',
-		next_resut: '8:30PM',
-		number: 34,
-	},
-	{
-		id: '58694a0f-3da1-471f-bd96-1SS571e29d72',
-		title: 'RJ MUMBAI',
-		next_resut: '8:30PM',
-		number: 34,
-	},
-	{
-		id: '58694a0f-3da1-471f-bd96-145571e29DD2',
-		title: 'RJ KOLKATA',
-		next_resut: '8:30PM',
-		number: 34,
-	},
-	{
-		id: '58694a0f-3da1-471f-bd96-1GG5571e29d7',
-		title: 'RJ HYDERABAD',
-		next_resut: '8:30PM',
-		number: 34,
-	},
-	{
-		id: '58694a0f-3da1-471f-bd96-AA5571e29d72',
-		title: 'SHARJAH',
-		next_resut: '8:30PM',
-		number: 34,
-	},
-];
+
+
 const momentnow = moment().format('YYYY-MM-DD');
 const Item = ({ title, number, next_result, navigation, results, mode }) => {
 	const result = title === 'Minidiswar' ? results[0] : results;
@@ -66,10 +30,10 @@ const Item = ({ title, number, next_result, navigation, results, mode }) => {
 			<Text style={styles.title}>{title}</Text>
 			<Text style={styles.number}>
 				{title === 'Minidiswar'
-					? result[result.length - 1].number
+					? result[result.length  - 1].number
 					: result.length === 0
-					? number
-					: [result.length - 1].number}
+						? "XX"
+					: result[0].number}
 			</Text>
 			<View>
 				<Text
@@ -81,10 +45,10 @@ const Item = ({ title, number, next_result, navigation, results, mode }) => {
 						color: 'white',
 					}}>
 					{title === 'Minidiswar'
-						? result[result.length - 1].time
+						? result[result.length  - 1].time
 						: result.length === 0
 						? '--'
-						: [result.length - 1].time}
+						: result[0].time}
 				</Text>
 			</View>
 			<View style={{ backgroundColor: 'yellow', borderRadius: 2 }}>
@@ -114,7 +78,6 @@ const HomeScreen = () => {
 		}, 2000);
 	}, []);
 
-	console.log(data);
 	return (
 		<SafeAreaProvider>
 			<SafeAreaView style={styles.container}>
