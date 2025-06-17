@@ -13,3 +13,6 @@ export const fetchallapi = async (setdata) => {
 		console.error(error);
 	}
 };
+
+
+
