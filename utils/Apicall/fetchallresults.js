@@ -14,5 +14,3 @@ export const fetchallapi = async (setdata) => {
 	}
 };
 
-
-

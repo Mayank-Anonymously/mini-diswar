@@ -74,7 +74,7 @@ const HomeScreen = () => {
 		fetchallapi(setdata);
 
 		setInterval(() => {
-			fetchallapi(setdata);
+				fetchallapi(setdata);
 		}, 2000);
 	}, []);
 
