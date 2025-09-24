@@ -1,104 +1,144 @@
-import { useNavigation } from '@react-navigation/native';
+// src/screens/HomeScreen.js
 import React, { useEffect, useState } from 'react';
 import {
 	View,
 	FlatList,
 	StyleSheet,
 	Text,
-	StatusBar,
 	ImageBackground,
 	TouchableOpacity,
+	ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
-import {
-	fetchallapi,
-	fetchallresults,
-} from '../../utils/Apicall/fetchallresults';
+import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchResults } from '../../components/redux/slices/resultSlice';
 import moment from 'moment';
 
-
+// Image imports
+import mini from '../../assets/tiles/minidisawar.png';
+import ghaziabad from '../../assets/tiles/ghaziabad.png';
+import delhi from '../../assets/tiles/delhi.png';
+import gurgaon from '../../assets/tiles/gurgaon.png';
+import ganesh from '../../assets/tiles/ganesh.png';
+import faridabad from '../../assets/tiles/faridabad.png';
+import desawar from '../../assets/tiles/deshwar.png';
+import gali from '../../assets/tiles/gali.png';
+import LiveIndicator from '../../components/LiveIndicator';
+import { setSelectedResult } from '../../components/redux/slices/selectedResultSlice';
+import Marquee from '../../components/marquee';
 
 const momentnow = moment().format('YYYY-MM-DD');
-const Item = ({ title, number, next_result, navigation, results, mode }) => {
+
+const Item = ({ title, number, next_result, results }) => {
+	const [imageLoaded, setImageLoaded] = useState(false);
+
+	const name =
+		title === 'Minidiswar'
+			? mini
+			: title.toLowerCase().includes('delhi')
+			? delhi
+			: title.toLowerCase().includes('gurgaon')
+			? gurgaon
+			: title.toLowerCase().includes('ganesh')
+			? ganesh
+			: title.toLowerCase().includes('faridabad')
+			? faridabad
+			: title.toLowerCase().includes('desawar')
+			? desawar
+			: title.toLowerCase().includes('gali')
+			? gali
+			: title.toLowerCase().includes('ghaziabad')
+			? ghaziabad
+			: '';
+
 	const result = title === 'Minidiswar' ? results[0] : results;
 	return (
 		<ImageBackground
 			style={styles.item}
-			source={{
-				uri: 'https://images.unsplash.com/photo-1503264116251-35a269479413?fit=crop&w=1050&q=80',
-			}}>
-			<Text style={styles.title}>{title}</Text>
-			<Text style={styles.number}>
-				{title === 'Minidiswar'
-					? result[result.length  - 1].number
-					: result.length === 0
-						? "XX"
-					: result[0].number}
-			</Text>
-			<View>
-				<Text
-					style={{
-						fontSize: 20,
-						fontWeight: 'bold',
-						margin: 1,
-						textAlign: 'center',
-						color: 'white',
-					}}>
-					{title === 'Minidiswar'
-						? result[result.length  - 1].time
-						: result.length === 0
-						? '--'
-						: result[0].time}
-				</Text>
+			source={name}
+			onLoadEnd={() => setImageLoaded(true)}
+			imageStyle={{ borderRadius: 10 }}>
+			<View style={styles.row}>
+				<Text style={styles.title}>{title}</Text>
+				{title === 'Minidiswar' && <LiveIndicator />}
 			</View>
-			<View style={{ backgroundColor: 'yellow', borderRadius: 2 }}>
-				<Text
-					style={{
-						fontSize: 10,
-						fontWeight: 'bold',
-						margin: 1,
-						textAlign: 'center',
-					}}>
-					Next Result :{next_result}
-				</Text>
-			</View>
+
+			{imageLoaded ? (
+				<>
+					<Text style={styles.number}>
+						{title === 'Minidiswar'
+							? result?.[result.length - 1]?.number ?? 'XX'
+							: result?.[0]?.number ?? 'XX'}
+					</Text>
+
+					<Text style={styles.time}>
+						{title === 'Minidiswar'
+							? result?.[result.length - 1]?.time ?? '--'
+							: result?.[0]?.time ?? '--'}
+					</Text>
+
+					<View style={styles.nextResultBox}>
+						<Text style={styles.nextResultText}>
+							Next Result: {next_result}
+						</Text>
+					</View>
+				</>
+			) : (
+				<View style={styles.loadingView}>
+					<ActivityIndicator
+						size='small'
+						color='#fff'
+					/>
+				</View>
+			)}
 		</ImageBackground>
 	);
 };
 
 const HomeScreen = () => {
 	const navigation = useNavigation();
-	const [data, setdata] = useState([]);
+	const dispatch = useDispatch();
+	const { data, status } = useSelector((state) => state.results);
 
 	useEffect(() => {
-		fetchallapi(setdata);
+		dispatch(fetchResults());
 
-		setInterval(() => {
-				fetchallapi(setdata);
+		const interval = setInterval(() => {
+			dispatch(fetchResults());
 		}, 2000);
+
+		return () => clearInterval(interval);
 	}, []);
 
 	return (
 		<SafeAreaProvider>
 			<SafeAreaView style={styles.container}>
+				<Marquee
+					text='Welcome to Minidiswar Results!'
+					duration={10000} // adjust speed
+				/>
 				<FlatList
 					data={data}
 					renderItem={({ item }) => (
 						<TouchableOpacity
-							onPress={() =>
-								navigation.navigate('Results', {
-									title: item.categoryname,
-									item: item.result,
-									date: item.date,
-									mode: item.mode,
-									loadingg: false,
-								})
-							}>
+							onPress={() => {
+								dispatch(
+									setSelectedResult({
+										title: item.categoryname,
+										item: item.result,
+										date: item.date,
+										mode: item.mode,
+										loadingg: false,
+									})
+								);
+
+								navigation.navigate('Results'); // No
+							}}>
 							<Item
 								title={item.categoryname}
 								number={item.number}
 								next_result={item.next_result}
-								navigation={navigation}
 								results={
 									item.categoryname === 'Minidiswar'
 										? item.result
@@ -106,12 +146,12 @@ const HomeScreen = () => {
 												.map((it) => it.times)
 										: item.result
 								}
-								mode={item.mode}
 							/>
 						</TouchableOpacity>
 					)}
 					keyExtractor={(item) => item._id}
 					numColumns={2}
+					contentContainerStyle={{ paddingBottom: 30 }}
 				/>
 			</SafeAreaView>
 		</SafeAreaProvider>
@@ -121,20 +161,24 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		// marginTop: StatusBar.currentHeight || 0,
 		justifyContent: 'center',
 		alignItems: 'center',
 		backgroundColor: '#f7d560',
 		padding: 10,
 	},
 	item: {
-		backgroundColor: '#f9c2ff',
 		padding: 10,
-		marginVertical: 8,
-		marginHorizontal: 16,
+		margin: 8,
 		width: 150,
 		height: 150,
 		justifyContent: 'space-between',
+		borderRadius: 10,
+		overflow: 'hidden',
+	},
+	row: {
+		flexDirection: 'row',
+		justifyContent: 'space-around',
+		alignItems: 'center',
 	},
 	title: {
 		color: 'white',
@@ -147,6 +191,33 @@ const styles = StyleSheet.create({
 		fontSize: 36,
 		textAlign: 'center',
 		fontWeight: 'bold',
+	},
+	time: {
+		fontSize: 20,
+		fontWeight: 'bold',
+		textAlign: 'center',
+		color: 'white',
+	},
+	nextResultBox: {
+		backgroundColor: 'yellow',
+		borderRadius: 2,
+		paddingHorizontal: 2,
+	},
+	nextResultText: {
+		fontSize: 10,
+		fontWeight: 'bold',
+		textAlign: 'center',
+	},
+	loadingView: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	loadingScreen: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: '#fff',
 	},
 });
 

@@ -6,7 +6,9 @@ import { HOST } from '../static';
 const FetchResultsWithDate = (curmomnet, title, setdata, mode, setLoading) => {
 	setLoading(true);
 	const formatdate = moment(curmomnet).format('YYYY-MM-DD');
+
 	console.log(`${HOST}/fetch-results-by-month/${formatdate}/${title}/${mode}`);
+
 	const options = {
 		method: 'GET',
 		url: `${HOST}/fetch-results-by-month/${formatdate}/${title}/${mode}`,

@@ -10,46 +10,51 @@ import {
 	ActivityIndicator,
 } from 'react-native';
 import React, { useState, useCallback } from 'react';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
+import { useSelector } from 'react-redux';
 import FetchResultsWithDate from '../../utils/Apicall/FetchResultsWithDate';
 
 const ResultsScreen = () => {
-	const route = useRoute();
-	const { title, item, date, mode, loadingg } = route.params;
-
+	const selected = useSelector((state) => state.selectedResult.selected);
+	console.log(selected);
 	const [show, setShow] = useState(false);
-	const [calenerdate, setDate] = useState(new Date());
-	const [data, setdata] = useState([]);
-	const [loading, setLoading] = useState(loadingg ?? true);
-	const [currr, setCurrr] = useState('');
-	const curmomnet = moment().format();
+	const [calendarDate, setDate] = useState(new Date());
+	const [data, setData] = useState([]);
+	const [loading, setLoading] = useState(selected?.loadingg ?? true);
+	const [selectedMoment, setSelectedMoment] = useState('');
 
-	// Fetch data every time screen comes into focus
+	const defaultMoment = moment().format();
+
+	const { title, item, date, mode } = selected || {};
+
 	useFocusEffect(
 		useCallback(() => {
+			if (!title) return;
 			setLoading(true);
-			FetchResultsWithDate(curmomnet, title, setdata, mode, setLoading);
+			FetchResultsWithDate(defaultMoment, title, setData, mode, setLoading);
 		}, [title])
 	);
+
 	const handleChange = (event, selectedDate) => {
-		const curmomnet = selectedDate || calenerdate;
+		const pickedDate = selectedDate || calendarDate;
 		setShow(false);
-		setDate(curmomnet);
-		setCurrr(curmomnet);
+		setDate(pickedDate);
+		setSelectedMoment(pickedDate);
 		setLoading(true);
-		FetchResultsWithDate(curmomnet, title, setdata, mode, setLoading);
+		FetchResultsWithDate(pickedDate, title, setData, mode, setLoading);
 	};
-	const main = currr !== '' ? currr : curmomnet;
-	console.log(data);
+
+	const currentDate = selectedMoment !== '' ? selectedMoment : defaultMoment;
+
 	return (
 		<View style={{ flex: 1, backgroundColor: '#f7d560' }}>
 			<View style={styles.header}>
 				<Text style={styles.title}>{title}</Text>
 				<Pressable onPress={() => setShow(true)}>
 					<Text style={styles.dateButton}>
-						{moment(calenerdate).format('DD-MM-YYYY')}
+						{moment(calendarDate).format('DD-MM-YYYY')}
 					</Text>
 				</Pressable>
 			</View>
@@ -69,46 +74,48 @@ const ResultsScreen = () => {
 					{title === 'Minidiswar' ? (
 						<ScrollView style={{ marginTop: 10 }}>
 							{data?.map((itex, idx) => (
-								<View key={idx}>
+								<View
+									key={idx}
+									style={{ marginBottom: 120 }}>
 									{itex.result
 										.filter(
-											(iit) => iit.date == moment(main).format('YYYY-MM-DD')
+											(i) => i.date === moment(currentDate).format('YYYY-MM-DD')
 										)
-										.map((resItem, resIdx) => {
-											return (
-												<View>
-													{resItem.times.map((itss, isidx) => (
-														<View
-															key={isidx}
-															style={styles.resultRow}>
-															<Text style={styles.resultText}>{itss.time}</Text>
-															<Text style={styles.resultText}>
-																{itss.number}
-															</Text>
-														</View>
-													))}
-												</View>
-											);
-										})}
+										.map((resItem, resIdx) => (
+											<View key={resIdx}>
+												{resItem.times.map((timeItem, timeIdx) => (
+													<View
+														key={timeIdx}
+														style={styles.resultRow}>
+														<Text style={styles.resultText}>
+															{timeItem.time}
+														</Text>
+														<Text style={styles.resultText}>
+															{timeItem.number}
+														</Text>
+													</View>
+												))}
+											</View>
+										))}
 								</View>
 							))}
 						</ScrollView>
 					) : (
 						<ScrollView style={{ marginTop: 10 }}>
 							{data?.map((itex, idx) => (
-								<View key={idx}>
-									{itex.result?.map((resItem, resIdx) => {
-										return (
-											<View
-												key={resIdx}
-												style={styles.resultRow}>
-												<Text style={styles.resultText}>
-													{mode === 'scraper' ? resItem.date : resItem.time}
-												</Text>
-												<Text style={styles.resultText}>{resItem.number}</Text>
-											</View>
-										);
-									})}
+								<View
+									key={idx}
+									style={{ marginBottom: 120 }}>
+									{itex.result?.map((resItem, resIdx) => (
+										<View
+											key={resIdx}
+											style={styles.resultRow}>
+											<Text style={styles.resultText}>
+												{mode === 'scraper' ? resItem.date : resItem.time}
+											</Text>
+											<Text style={styles.resultText}>{resItem.number}</Text>
+										</View>
+									))}
 								</View>
 							))}
 						</ScrollView>
@@ -116,7 +123,7 @@ const ResultsScreen = () => {
 
 					{Platform.OS === 'android' && show && (
 						<DateTimePicker
-							value={calenerdate}
+							value={calendarDate}
 							mode='date'
 							display='default'
 							onChange={handleChange}
@@ -132,7 +139,7 @@ const ResultsScreen = () => {
 							<View style={styles.modalBackground}>
 								<View style={styles.modalContent}>
 									<DateTimePicker
-										value={calenerdate}
+										value={calendarDate}
 										mode='date'
 										display='spinner'
 										onChange={handleChange}
@@ -173,9 +180,6 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 	},
 	resultBox: {
-		backgroundColor: 'white',
-		elevation: 2,
-		height: 500,
 		marginHorizontal: 20,
 		padding: 10,
 		borderRadius: 10,
@@ -197,6 +201,10 @@ const styles = StyleSheet.create({
 		marginTop: 10,
 		borderBottomWidth: 1,
 		borderBottomColor: 'whitesmoke',
+		margin: 10,
+		backgroundColor: 'white',
+		borderRadius: 10,
+		padding: 10,
 	},
 	resultText: {
 		textAlign: 'center',
